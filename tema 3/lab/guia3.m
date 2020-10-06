@@ -42,31 +42,6 @@ classdef guia3
         end
         
         
-        
-        %%
-        %
-        %
-        % Ejercicio numero 2
-        % Inputs: 
-        % funcion_vector: vector de la funcion polinomica. 
-        % rango_ejes: rango de los ejes cartesianos. 
-        % errbus: error buscado.
-        % intervalo: intervalo que se analizara.
-        %
-        % guia3.ejer2([-0.0013, 0.3, 8, -372], [24, 26, 250, 252], 0.001, [-280, 280])
-        % guia3.ejer2([2*pi, 90*pi, 0, -45000], [10, 15], 0.001, [-50, 50])
-        %
-        function ejer2(funcion_vector, intervalos, errbus, rango_ejes)
-            import pkg.Metodos.*;
-                            
-           
-            Metodos.newtonRaph(funcion_vector, intervalos, errbus, rango_ejes);
-
-            fprintf("\n\n");
-        end
-
-        
-        
         %%
         %
         %

@@ -4,8 +4,7 @@ classdef Metodos
 
         %%
         %
-        %
-        % Plot a function from a vector and an interval
+        % Plot a function from a vector and an interval of axis range.
         %
         function plotFunction(funcion_vector, ran)
             funcion = poly2sym(funcion_vector);
@@ -29,6 +28,7 @@ classdef Metodos
         
         %%
         %
+        % Metodo de Tanteos.
         %
         % Recibe como parametros un vector, la cantidad de raices de la misma,
         % el primer valor por el que se desea realizar el tanteo y el incremento
@@ -97,6 +97,7 @@ classdef Metodos
         
         %%
         %
+        % Metodo del Intervalo Medio
         %
         % Recibe como parametros un vector, los distintos intervalos (en un array)
         % y el error absoluto que se desea tener en el resultado.
@@ -189,6 +190,7 @@ classdef Metodos
         
         %%
         %
+        % Metodo de Interpolacion Lineal
         %
         % Recibe como parametros un vector, los distintos intervalos (en un array)
         % y el error absoluto que se desea tener en el resultado.
@@ -277,9 +279,11 @@ classdef Metodos
         
         %%
         %
+        % Analisis de convergencia en el metodo de Newton-Raphson.
         %
         % Analiza las condiciones de convergencia para el metodo de Newton-Raphson.
         % Recibe la funcion y los distintos intervalos de raices (en un array).
+        %
         function [extremo] = convergenciaNR(funcion, extremos)
             
             % Condicion F(a)*F(b) < 0
@@ -311,8 +315,10 @@ classdef Metodos
         end
         
         
+        
         %%
         %
+        % Metodo de Newton-Raphson.
         %
         % Recibe como parametros:
         % una funcion en forma de vector,
@@ -324,7 +330,7 @@ classdef Metodos
         %
         function newtonRaph(funcion_vector, intervalos, errbus, rango_ejes)
               
-             % Graficamos la funcion 
+            % Graficamos la funcion 
             Metodos.plotFunction(funcion_vector, rango_ejes);
                
             % Obtenemos la derivada de la funcion en forma de vector.
@@ -464,6 +470,187 @@ classdef Metodos
             end
                 
             fprintf("\n");
+        end
+        
+        
+        
+        %%
+        %
+        % Plot a function and its iterations till we find the roots,
+        % from a function_handle and an interval of axis range.
+        %
+        function plotIterations(func_g, ran)
+            str = func2str(func_g);
+            strFunc = erase(str,"@(x)");
+            
+            fplot(func_g);
+            xlim([ran(1) ran(2)])
+            ylim([ran(1) ran(2)])
+            title(strFunc);
+            hold on
+            grid on
+            xlabel('x');
+            ylabel('y');
+            fplot(@(x)x);
+            ax = gca;
+            ax.XAxisLocation = 'origin';
+            ax.YAxisLocation = 'origin';
+        end
+        
+        
+        
+        %%
+        %
+        % Metodo de Iteracion del punto fijo y Aceleracion de Aitken.
+        %
+        % Recibe como parametros un X0 o X inicial, el error buscado,
+        % el rango de los ejes cartesianos, y la funcion a iterar en
+        % forma de 'function_handle', ej : @(x) cos(x)
+        %
+        % Warning: Function behaves unexpectedly on array inputs...properly vectorize your function
+        % Answer: 
+        % Link 1) https://www.mathworks.com/matlabcentral/answers/446689-fixing-a-plot-with-error-message-function-behaves-unexpectedly-on-array-inputs-properly-vectoriz
+        % You will need to change all of the matrix operators for array operators, e.g:
+        % * to .*
+        % ^ to .^
+        % / to ./
+        % etc.
+        % Link 2) https://www.mathworks.com/help/matlab/matlab_prog/array-vs-matrix-operations.html
+        % Link 3) https://www.mathworks.com/help/matlab/matlab_prog/vectorization.html
+        %
+        % Metodos.iteracionPtoFijo(0, 0.001, [0, 1], @(x) cos(x))
+        % Metodos.iteracionPtoFijo(200, 0.0001, [198, 215], @(x) 40.*log(400./(500-x))+200)
+        % Metodos.iteracionPtoFijo(1, 0.0001, [-5, 5], @(x) (2.*x+2).^(1./3))
+        %
+        function iteracionPtoFijo(x_inicial, errbus, rango_ejes, funcion)
+            
+            str = func2str(funcion);
+            strFunc = erase(str,"@(x)");
+            fprintf("\n\t* * * METODO DE INTERACION DEL PUNTO FIJO * * *\n\n\tF(x) = %s\n",strFunc);
+            
+            %# You function here: g = @(x) cos(x);
+            g = funcion;
+            
+            %# Start out iteration loop. x1 = x and x2 = y.
+            x1 = x_inicial;
+            x2 = g(x1);
+
+            %# iteration counter.
+            iterations = 0;
+
+            % Graficamos las iteraciones.
+            Metodos.plotIterations(g, rango_ejes);
+            
+            fprintf("\nDesea aplicar la aceleracion de Aitken? [S/N]: ");
+            answer = input("","s");
+                
+            if (answer == 's' || answer == 'S') 
+                band = true;
+                fprintf("\nMetodo de Iteracion aplicando Aceleracion de Aitken:\n");
+            else
+                fprintf("\nMetodo de Iteracion:\n");
+                band = false;
+            end
+            
+            % Contador en caso de aplicar aceleracion de Aitken.
+            cont = 1;
+            
+            fprintf("\n\tX\t\t\tF(X)\t\t\tError");
+            
+            while (abs(x2-x1) > errbus && iterations<100)
+                plot([x1 x1], [x1 x2], 'k-')
+                plot([x1 x2], [x2 x2], 'k--')
+                %pause    
+                
+                % Antes de seguir mostramos los valores actuales.
+                fprintf("\n%f\t\t%f\t\t%f",x1,x2,abs(x2-x1))
+                
+                if band && cont > 3
+                    % Calculamos una mas. Xn+1
+                    x3 = g(x2);
+                    
+                    % Antes de seguir mostramos los valores actuales.
+                    fprintf("\n%f\t\t%f\t\t%f",x2,x3,abs(x3-x2))
+                    
+                    % Aplicamos la aceleracion de Aitken.
+                    ait = x3 - (((x3-x2)^2)/(x3-2*x2+x1));
+                    
+                    % Seteamos los nuevos valores de X e Y
+                    x1 = ait;
+                    x2 = g(x1);
+                    
+                    % Que no vuelva a entrar al loop hasta que calcule dos
+                    % aproximaciones mas.
+                    cont = 1;
+                else
+                    % Seteamos los nuevos valores de X e Y
+                    x1 = x2;
+                    x2 = g(x1);
+                end
+                
+                % Sumamos 1 a iterations y a cont.
+                cont = cont + 1;
+                iterations = iterations + 1;
+            end
+            
+            fprintf("\n\nCantidad de iteraciones: %i: \n\n", iterations);
+            fprintf("\n");
+        end
+        
+        
+        
+        %%
+        %
+        % Here we are using Symbolic expressions
+        %
+        % Polynomial differentiation = polyder
+        % Symbolic differentiation = diff
+        %
+        % Metodos.gXmasVentajosa(["(2*x+2)^(1/3)", "(2+(2/x))^(1/2)", "((2/x)+(2/(x^2)))"], 1)
+        %   
+        function gXmasVentajosa(funciones_vector, x0)
+            
+            % Index.
+            cant = length(funciones_vector);
+            
+            % Vector de resultados de pendientes.
+            m = [];
+            
+            fprintf("\nFunciones y sus derivadas:\n");
+            
+            % Iteramos para cada funcion.
+            for i=1: 1: cant
+                
+                func_i = funciones_vector(i);
+                
+                % Trabajamos con expresion simbolica.
+                % Convertimos el string en funcion.
+                syms x;
+                funcion = str2sym(func_i);
+                
+                % Obtenemos la derivada.
+                derivada = diff(funcion,x);
+                
+                fprintf("\n\t%i) g(x) = %s\t\t=>\t\tg'(x) = %s", i, func_i, derivada);
+                
+                % Evaluamos la funcion en x0.
+                expr = subs(derivada,x,x0);
+                
+                % Convertimos a float.
+                pend = vpa(expr);
+               
+                % Cargamos en el vector de resultados.
+                m = [m, pend];
+            end
+            
+            % Seteamos el valor minimo del vector de resultados.
+            min_m = find(m == min(m));
+            
+            fprintf("\n\n\tg(x) = %s es la funcion mas ventajosa para encontrar la raiz \n", funciones_vector(min_m));
+            fprintf("\tpor el metodo de Iteracion del Punto Fijo porque es la de derivada \n");
+            fprintf("\tcon menor pendiente en x = %f \n", x0);
+           
+            fprintf("\n\n");
         end
         
         
