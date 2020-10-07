@@ -30,18 +30,20 @@ classdef Metodos
         %
         % Metodo de Tanteos.
         %
-        % Recibe como parametros un vector, la cantidad de raices de la misma,
-        % el primer valor por el que se desea realizar el tanteo y el incremento
-        % que va a tomar el procedimiento, y devuelve un array con los intervalos
-        % que tienen raices de la funcion.
+        % Parametros: 
+        % funcion_vector: vector de la funcion polinomica.
+        % n_raices: numero de raices de la funcion previamente obtenidos
+        % con la regla de Rene Descartes. 
+        % x_inicial: X0 o X inicial. 
+        % incremento_x: incremento de X.
         %
         % intervalos = Metodos.tanteos([-pi, 9*pi, 0, -90], 3, -20, 1)
         %
-        function [intervalos] = tanteos(funcion_vector, n_raices, x_inicial, incrX)   
+        function [intervalos] = tanteos(funcion_vector, n_raices, x_inicial, incremento_x)   
         
             % Crea un polinimoio con el vector recibido por parametro. 
             x = x_inicial;
-            vx = incrX;
+            vx = incremento_x;
             i = 1;
             intervalos = [];
 
@@ -97,10 +99,13 @@ classdef Metodos
         
         %%
         %
-        % Metodo del Intervalo Medio
+        % Metodo del Intervalo Medio.
         %
-        % Recibe como parametros un vector, los distintos intervalos (en un array)
-        % y el error absoluto que se desea tener en el resultado.
+        % Parametros:
+        % funcion_vector: vector de la funcion polinomica.
+        % intervalos: donde se encuentran las raices.
+        % errbus: error buscado.
+        % rango_ejes: rango de los ejes cartesianos.
         %
         % Metodos.intervaloMedio([2*pi, 90*pi, 0, -45000], [10, 15], 0.001)
         %
@@ -177,7 +182,7 @@ classdef Metodos
                 end
                 
                fprintf("\n\n\t*Raiz en el intervalo (%i, %i) con un error de %f= %f",intervalos(i),intervalos(i+1),errbus,medio);
-               fprintf("\nEl metodo realiza %i iteraciones\n\n",iteraciones);
+               fprintf("\n\nEl metodo realiza %i iteraciones\n\n",iteraciones);
                
                % Pasamos al siguiente intervalo.
                i = i + 2;
@@ -190,12 +195,15 @@ classdef Metodos
         
         %%
         %
-        % Metodo de Interpolacion Lineal
+        % Metodo de Interpolacion Lineal.
         %
-        % Recibe como parametros un vector, los distintos intervalos (en un array)
-        % y el error absoluto que se desea tener en el resultado.
+        % Parametros:
+        % funcion_vector: vector de la funcion polinomica.
+        % intervalos: donde se encuentran las raices.
+        % errbus: error buscado.
+        % rango_ejes: rango de los ejes cartesianos.
         %
-        % Metodos.interpolacionLin([2*pi, 90*pi, 0, -45000], [10, 15], 0.001)
+        % Metodos.interpolacionLin([2*pi, 90*pi, 0, -45000], [10, 15], 0.001, [-50, 50])
         %
         function interpolacionLin(funcion_vector, intervalos, errbus, rango_ejes) 
         	
@@ -279,10 +287,12 @@ classdef Metodos
         
         %%
         %
-        % Analisis de convergencia en el metodo de Newton-Raphson.
+        % Analisis de convergencia en el metodo de Newton-Raphson
+        % (Condiciones de Fourier).
         %
-        % Analiza las condiciones de convergencia para el metodo de Newton-Raphson.
-        % Recibe la funcion y los distintos intervalos de raices (en un array).
+        % Parametros:
+        % funcion: vector de la funcion polinomica.
+        % extremos: de los intervalos donde se encuentran las raices.
         %
         function [extremo] = convergenciaNR(funcion, extremos)
             
@@ -320,10 +330,11 @@ classdef Metodos
         %
         % Metodo de Newton-Raphson.
         %
-        % Recibe como parametros:
-        % una funcion en forma de vector,
-        % los distintos intervalos,
-        % el error absoluto que se desea tener en el resultado.
+        % Parametros:
+        % funcion_vector: vector de la funcion polinomica.
+        % intervalos: donde se encuentran las raices.
+        % errbus: error buscado.
+        % rango_ejes: rango de los ejes cartesianos.
         %
         % Metodos.newtonRaph([-0.0013, 0.3, 8, -372], [24, 26, 250, 252], 0.001, [-280, 280])
         % Metodos.newtonRaph([2*pi, 90*pi, 0, -45000], [10, 15], 0.001, [-50, 50])
@@ -469,7 +480,7 @@ classdef Metodos
                 % Fin del bucle while.
             end
                 
-            fprintf("\n");
+            fprintf("\n\n");
         end
         
         
@@ -501,11 +512,14 @@ classdef Metodos
         
         %%
         %
-        % Metodo de Iteracion del punto fijo y Aceleracion de Aitken.
+        % Metodo de Iteracion del Punto Fijo y Aceleracion de Aitken.
         %
-        % Recibe como parametros un X0 o X inicial, el error buscado,
-        % el rango de los ejes cartesianos, y la funcion a iterar en
-        % forma de 'function_handle', ej : @(x) cos(x)
+        % Parametros: 
+        % x_inicial: X0 o X inicial. 
+        % errbus: error buscado.
+        % rango_ejes: rango de los ejes cartesianos.
+        % funcion: funcion a iterar en forma de 'function_handle' 
+        % (Symbolic), ej : @(x) cos(x)
         %
         % Warning: Function behaves unexpectedly on array inputs...properly vectorize your function
         % Answer: 
@@ -582,6 +596,8 @@ classdef Metodos
                     % Que no vuelva a entrar al loop hasta que calcule dos
                     % aproximaciones mas.
                     cont = 1;
+                    
+                    iterations = iterations + 1;
                 else
                     % Seteamos los nuevos valores de X e Y
                     x1 = x2;
@@ -600,11 +616,17 @@ classdef Metodos
         
         
         %%
+        % 
+        % Verificar cual g(X) es mas ventajosa para aplicar el metodo de 
+        % Iteracion del Punto.
         %
-        % Here we are using Symbolic expressions
+        % Parametros:
+        % funciones_vector: vector de las funciones polinomica en forma de string.
+        % x0: numero real que se va a usar para evaluar la derivada de las funciones.
         %
-        % Polynomial differentiation = polyder
-        % Symbolic differentiation = diff
+        % Here we are using Symbolic expressions.
+        % (Polynomial differentiation = polyder)
+        % (Symbolic differentiation = diff)
         %
         % Metodos.gXmasVentajosa(["(2*x+2)^(1/3)", "(2+(2/x))^(1/2)", "((2/x)+(2/(x^2)))"], 1)
         %   
@@ -645,10 +667,11 @@ classdef Metodos
             
             % Seteamos el valor minimo del vector de resultados.
             min_m = find(m == min(m));
+            func_ventaj = funciones_vector(min_m);
             
-            fprintf("\n\n\tg(x) = %s es la funcion mas ventajosa para encontrar la raiz \n", funciones_vector(min_m));
+            fprintf("\n\n\tg(x) = %s es la funcion mas ventajosa para encontrar la raiz \n", func_ventaj);
             fprintf("\tpor el metodo de Iteracion del Punto Fijo porque es la de derivada \n");
-            fprintf("\tcon menor pendiente en x = %f \n", x0);
+            fprintf("\tcon menor pendiente en x = %.2f \n", x0);
            
             fprintf("\n\n");
         end
