@@ -29,7 +29,7 @@ classdef guia3
             % los intervalos donde hay reices.
             intervalos = Metodos.tanteos(funcion_vector, n_raices, x_inicial, incremento_x);
 
-            fprintf("\n\nQue metodo desea aplicar?\n\t1-Intervalo Medio\n\t2-Interpolacion Lineal\n\t3-Interpolacion Lineal\n ");
+            fprintf("\n\nQue metodo desea aplicar?\n\t1-Intervalo Medio\n\t2-Interpolacion Lineal\n\t3-Newton-Raphson\n ");
             condicion = input("");
             switch condicion
                 case 1 
