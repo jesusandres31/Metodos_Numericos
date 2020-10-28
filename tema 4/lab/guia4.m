@@ -4,6 +4,7 @@ classdef guia4
         %%
         %
         %
+        % Sistemas No Homogeneos.
         % Metodo de Eliminacion de Gauss
         % p_matriz: matriz conrrespondiente al sistema de ecuaciones.
         %
@@ -30,7 +31,7 @@ classdef guia4
             for i=numRows :-1 :1
                 % Seteamos el X a calcular.
                 fila_souluc(1,i)= p_matriz(i,numCols);
-                
+
                 for j=numRows :-1 :i
                     if (i==j) 
                         % En el caso que se encuentre con un elemento de la
@@ -111,6 +112,7 @@ classdef guia4
         %%
         %
         %
+        % Sistemas Homogeneos.
         % Metodo de Faddeev-Leverrier
         % Recibe como parametro la matriz cuadrada A del sistema de
         % ecuaciones y devuelve el polinomio caracteristico asociado a esa
@@ -156,12 +158,15 @@ classdef guia4
                 fprintf("\nB%i = \n",i);
                 disp(m_a);
                 
-                for j=1: 1: numRows
+               % for j=1: 1: numRows
                    % Asigna a traza la suma de la diagonal.
-                   traza = traza + m_a(j,j);    
-                end
+               %    traza = traza + m_a(j,j);    
+               % end
+               
+               % trace: funcion de matlab que calcula la traza.
+               traza = trace(m_a);
                 
-                % Finalizamos el calculo de la traza (ver formula).
+                % Finalizamos el calculo de la traza.
                 traza = traza / i;
                 % Y la visualizamos
                 fprintf("b%i = %.2f\n",i,traza);  
@@ -184,6 +189,9 @@ classdef guia4
             % Convertimos el vector en polinomio
             poli_caract = poly2sym(vector_traza);
       
+            % Funcion matlab para calcular el polinomio caracteristico
+            % polCar = charpoly(p_matriz)
+            
             fprintf("\n\nPolinomio Caracteristico de la matriz A: ")
             disp(poli_caract);
         end 
@@ -192,4 +200,5 @@ classdef guia4
         
     end
 end
+
 
