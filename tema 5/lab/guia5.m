@@ -49,6 +49,7 @@ classdef guia5
             fprintf("\n");
             % Mostramos la tabla de deltas Y.
             disp(tablaDeltas);
+            
             tablaY = tablaDeltas;
         end
         
@@ -88,21 +89,23 @@ classdef guia5
             % Dependiendo de si la bandera p_asc sea verdadera o falsa se 
             % tomaran los valores de la primer fila o de las ultimas.
             if p_asc 
-                fprintf("\n\tMetodo de Interpolacion Newton Ascendente: \n\n");
+                fprintf("\n\tMetodo de Interpolacion Newton-Gregory Ascendente: \n\n");
                 fila = 1;
             else
-                fprintf("\n\tMetodo de Interpolacion Newton Descendente: \n\n");
+                fprintf("\n\tMetodo de Interpolacion Newton-Gregory Descendente: \n\n");
                 fila = numRows;
             end  
             
             % Obtiene el valor de U = (X - Xo) / h
             u = (p_x - p_matriz(fila,1))/h;
+            
             % Asignamos a resultadoX el primer termino de la formula.
             resultadoX = tablaCompleta(fila,2);
             
             % Contador que determina cual valor constante se debe restar a 
             % u segun corresponda en la formula.
             cont = 0;
+            
             % Empezamos a imprimir la ecuacion.
             fprintf("\tP(%f) = %f + ",p_x,resultadoX);
             
@@ -134,7 +137,10 @@ classdef guia5
                         fprintf("*(%f+(%i))",u,j);
                     end 
                 end
+                
+                % imprimimos factorial
                 fprintf("/%i!)",cont+1);
+                
                 if (i ~= numCols) 
                     fprintf(" + ");
                 end
@@ -144,6 +150,7 @@ classdef guia5
                 if (mod(i,2)==0) 
                     fprintf("\n\t");
                 end
+                
                 cont = cont + 1;
                 
                 % Se suma al resultado el ultimo termino hallado.
@@ -266,11 +273,11 @@ classdef guia5
             i = guia5.findInterval(p_matriz ,p_y);
             
             % Seteamos los valores de las variables acuerdo al indice.
-            x0 = tablaCompleta(i+1,1);
-            x1 = tablaCompleta(i+2,1);
-            y0 = tablaCompleta(i+1,2);
-            d1y0 = tablaCompleta(i+1,3);
-            d2y0 = tablaCompleta(i+1,4);
+            x0 = tablaCompleta(i,1);
+            x1 = tablaCompleta(i+1,1);
+            y0 = tablaCompleta(i,2);
+            d1y0 = tablaCompleta(i,3);
+            d2y0 = tablaCompleta(i,4);
            
             % Aplicamos la formula.
             % solve: func de matlab para hallar las raices de una ecuación.
@@ -285,7 +292,6 @@ classdef guia5
             cantidadX = numRows;
            
             fprintf ("\n\n\tCon un valor de Y: %f\n",p_y);
-            
             % Muestra como resultado aquella raiz que se encuentre dentro 
             % del intervalo.
             if (res(1,1) <= p_matriz(cantidadX,1)) && (res(1,1) >= p_matriz(1,1)) 

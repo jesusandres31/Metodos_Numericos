@@ -83,10 +83,10 @@ classdef guia6
             % Dependiendo de si la bandera p_asc sea verdadera o falsa se 
             % tomaran los valores de la primer fila o de las ultimas.
             if p_asc 
-                fprintf("\n\tMetodo Derivado de Interpolacion Newton Ascendente: \n\n");
+                fprintf("\n\tMetodo Derivado de Interpolacion Newton-Gregory Ascendente: \n\n");
                 fila = 1;
             else
-                fprintf("\n\tMetodo Derivado de Interpolacion Newton Descendente: \n\n");
+                fprintf("\n\tMetodo Derivado de Interpolacion Newton-Gregory Descendente: \n\n");
                 fila = numRows;
             end  
             
@@ -184,10 +184,10 @@ classdef guia6
             % Dependiendo de si la bandera p_asc sea verdadera o falsa se 
             % tomaran los valores de la primer fila o de las ultimas.
             if p_asc 
-                fprintf("\n\tMetodo Derivado de Interpolacion Newton Ascendente: \n\n");
+                fprintf("\n\tMetodo Doble Derivado de Interpolacion Newton Ascendente: \n\n");
                 fila = 1;
             else
-                fprintf("\n\tMetodo Derivado de Interpolacion Newton Descendente: \n\n");
+                fprintf("\n\tMetodo Doble Derivado de Interpolacion Newton Descendente: \n\n");
                 fila = numRows;
             end  
             
@@ -232,8 +232,8 @@ classdef guia6
                 % Calculamos la doble derivada parcial con respecto a u.
                 syms u
                 acum = diff(acum, u);
-                acum = diff(acum);
-                
+                acum = diff(acum, u);
+
                 cont = cont + 1;
         
                 % Se suma en la ecuación el ultimo termino hallado.
@@ -242,7 +242,7 @@ classdef guia6
             end
             
             % Imprimimos la ecación.
-            fprintf("\n\tEcuacion: P'(%f) = %s", p_x, ecuacion);            
+            fprintf("\n\tEcuacion: P''(%f) = %s", p_x, ecuacion);            
             
             % Remplazamos la variable symbolica u por el verdadero valor de
             % u, y resolvemos la ecuación.
