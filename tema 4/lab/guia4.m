@@ -1,14 +1,26 @@
 classdef guia4   
     methods (Static)
-        
+%%
+%
+%
+%%%%%%%%%% Sistemas De Ecuaciones Lineales.
+%
+%%
+%
+%
+%%%%%%%%%% Sistemas No Homogeneos.-----------------------------------------
+%
         %%
         %
         %
-        % Sistemas No Homogeneos.
         % Metodo de Eliminacion de Gauss
+        %
         % p_matriz: matriz conrrespondiente al sistema de ecuaciones.
         %
+        % ejer1
         % guia4.eliminacionDeGauss([80,15,35,60,230;28,72,57,25,180;20,20,12,20,80;50,10,20,60,160])
+        %
+        % ejer4 a
         % guia4.eliminacionDeGauss([4.3,3,2,960;1,3,1,510;2,1,3,610])
         %
         function eliminacionDeGauss(p_matriz)
@@ -63,8 +75,9 @@ classdef guia4
         %
         %
         % Triangulacion de matriz
-        % Recibe como patrametro la matriz a triangular y devuelve la
-        % matriz triangulada.
+        %
+        % p_matriz: matriz a triangular. 
+        % Devuelve la matriz triangulada.
         %
         function [matriz_result] = triangularMatriz(p_matriz)
             fprintf("\nSe inicia la triangulacion:\n\n");
@@ -106,19 +119,204 @@ classdef guia4
             % Devolvemos la matriz triangulada.
             matriz_result = p_matriz;
         end
-         
+        
         
         
         %%
         %
         %
-        % Sistemas Homogeneos.
-        % Metodo de Faddeev-Leverrier
-        % Recibe como parametro la matriz cuadrada A del sistema de
-        % ecuaciones y devuelve el polinomio caracteristico asociado a esa
-        % matriz.
+        % Metodo de Gauss-Seidel
         %
+        % p_matriz: matriz ampliada de entrada.
+        % vector_s: vector de soluciones estimadas o aleatorias.
+        % cant_iteraciones: cantidad de veces que desea aplicar el metodo.
+        %
+        % ejer 2
+        % guia4.gaussSeidel([0.1,7.0,-0.3,-19.30;3.0,-0.1,-0.2,7.85;0.3,-0.2,-10.3,-19.30],[1,1,1],2)
+        % guia4.gaussSeidel([3.0,-0.1,-0.2,7.85;0.1,7.0,-0.3,-19.30;0.3,-0.2,-10.3,-19.30],[1,1,1],2)
+        %
+        % ejer4 b
+        % guia4.gaussSeidel([4.3,3,2,960;1,3,1,510;2,1,3,610],[1,1,1],2)
+        %                   
+        function gaussSeidel(p_matriz, vector_sol, cant_iteraciones)
+            fprintf("\n\tMetodo de Gauss-Seidel\n");
+
+            % Llama a la funcion diagonalDominante para determinar si la matriz de entrada es diagonalmente dominante
+            diagonalDominante = guia4.isDiagonallyDominant(p_matriz);
+
+            % if (diagonalDominante == false)
+            if ~(diagonalDominante)
+                fprintf("\nLa matriz debe ser diagonalmente dominante!\n\n");
+                return;
+            end
+
+            % Obtebemos el numero de filas y de columnas.
+            [numRows, numCols] = size(p_matriz);
+
+            for i=1 :1 :cant_iteraciones + 1
+                fprintf("\nIteracion %i\n",i-1);
+                fprintf("\tx1\t\t\tx2\t\t\tx3\n")
+
+                for j=1 :1 :numRows
+                    % Asigna el valor del termino independiente de la fila
+                    % que este analizando al vector_sol en la posicion que 
+                    % contiene el valor de la variable que se calculara.
+                    vector_sol(1,j) = p_matriz(j,numCols);
+
+                    for k=1 :1 :numCols - 1
+                        if (k ~= j) 
+                            % En el caso de que sean valores fuera de la 
+                            % diagonal principal se restan al termino 
+                            % independiente de la matriz el producto del 
+                            % valor guardado de la variable en vector_sol 
+                            % por su respectivo coeficiente en la matriz 
+                            % de entrada.
+                            vector_sol(1,j) =  vector_sol(1,j) - (p_matriz(j,k)*vector_sol(1,k));  
+                        end                
+                    end
+
+                    % Finalmente se divide el valor obtenido en las
+                    % anteriores operaciones por el coeficiente del valor 
+                    % de la diagonal principal de la variable que se esta
+                    % calculando.
+                    vector_sol(1,j) = vector_sol(1,j)/p_matriz(j,j);
+                    disp(vector_sol);
+                end             
+            end
+            fprintf("\nSoluciones: \n");
+            for i=1 :1 :numRows
+                fprintf("\tx%i = %f\n",i,vector_sol(1,i));
+            end
+            fprintf("\n");
+        end
+   
+        
+        
+        %%
+        %
+        %
+        % Diagonal dominante
+        %
+        % p_matriz: matriz ampliada del sistema. 
+        % Devuelve true o false segun la matriz sea diagonalemente 
+        % dominante o no.
+        %
+        function [answer] = isDiagonallyDominant(p_matriz)
+            
+            % Obtebemos el numero de filas y de columnas.
+            [numRows, numCols] = size(p_matriz);
+            
+            % Seteanis la respuesta en true.
+            answer = true;
+            
+            for i=1 :1 :numRows
+                
+                % Sumamos la diagonal de la matriz.
+                sumatoria = 0;
+                for j=1:1:numRows
+                    if (i ~= j) 
+                        sumatoria = sumatoria + abs(p_matriz(i,j));
+                    end
+                end
+                
+                % Resolvemos si la diagonal de la matriz es dominante o no.
+                if sumatoria >= abs(p_matriz(i,i)) 
+                    answer = false;
+                    i = numRows;
+                end        
+            end
+        end
+        
+        
+        
+        %%
+        %
+        %
+        % Metodo de Factorizacion LU
+        %
+        % p_matriz: matriz ampliada de entrada.
+        %
+        % ejer 3
+        % guia4.factorizacionLU([2,3,4,6;4,5,10,16;4,8,2,2])
+        %
+        % ejer4 c
+        % guia4.factorizacionLU([4.3,3,2,960;1,3,1,510;2,1,3,610])
+        %
+        function factorizacionLU(p_matriz)
+            
+            % Obtebemos el numero de filas y de columnas.
+            [numRows, numCols] = size(p_matriz);
+
+            m_a = p_matriz;
+            
+            % La matriz A (m_a) es igual a la matriz con los coeficientes de entrada
+            m_a(:,numCols) = [];
+            
+            % La matriz B (m_b) es igual a la columna con los terminos independientes de entrada
+            col_b = p_matriz(:,numCols);
+            
+            numCols = numCols - 1;
+            
+            % Triangulamos la matriz.
+            % Se triangula la matriz A con el metodo de eliminacion de Gauss y se le asigna a la matriz U (m_u)
+            m_u = guia4.triangularMatriz(m_a);
+            
+            fprintf("\t\t\nMetodo de Descomposicion LU");  
+            
+            % Se halla la matriz L (m_l) multiplicando la matriz A por la inversa de U 
+            m_l = m_a * inv(m_u);
+            fprintf("\n\nMatriz L:\n");
+            disp(m_l);
+            fprintf("\nMatriz U:\n");
+            disp(m_u);
+            col_y = col_b;
+            
+            % Se halla los valores de y
+            for i=1 :1 :numRows
+                for j=1 :1 :numCols
+                    if (i>j) 
+                        % Se despeja el valor de Y con los valores de la matriz L y los valores de y hallados anteriormente
+                        col_y(i,1) = col_y(i,1) - (col_y(j,1)*m_l(i,j));       
+                    end
+                end               
+            end
+            col_x = col_y;
+            % Se halla los valores de x
+            fprintf("\nSoluciones: \n");
+            for i=numRows :-1 :1
+                for j=numCols :-1 :1
+                    if (i==j)
+                        col_x(i,1)= col_x(i,1)/m_u(i,j);
+                    else
+                        if (i<j) 
+                            col_x(i,1) = col_x(i,1) - (col_x(j,1)*m_u(i,j));
+                        end
+                    end           
+                end
+                fprintf("\tx%i = %f\n",i,col_x(i,1));               
+            end    
+            fprintf("\n");
+        end
+        
+        
+        
+%%
+%
+%
+%%%%%%%%%% Sistemas Homogeneos.--------------------------------------------       
+
+        %%
+        %
+        %
+        % Metodo de Faddeev-Leverrier
+        %
+        % p_matriz: matriz cuadrada A del sistema de ecuaciones. 
+        % Devuelve el polinomio caracteristico asociado a esa matriz.
+        % 
+        % ejer1
         % guia4.faddeevLeverrier([3,2,1;1,-2,3;2,0,4])
+        %
+        % ejer2
         % guia4.faddeevLeverrier([2,-0.5,0;-0.5,1,-0.5;0,-0.5,2/3])
         %
         function faddeevLeverrier(p_matriz)
@@ -158,13 +356,13 @@ classdef guia4
                 fprintf("\nB%i = \n",i);
                 disp(m_a);
                 
-               % for j=1: 1: numRows
-                   % Asigna a traza la suma de la diagonal.
-               %    traza = traza + m_a(j,j);    
-               % end
+                % for j=1: 1: numRows
+                %    % Asigna a traza la suma de la diagonal.
+                %    traza = traza + m_a(j,j);    
+                % end
                
-               % trace: funcion de matlab que calcula la traza.
-               traza = trace(m_a);
+                % trace: funcion de matlab que calcula la traza.
+                traza = trace(m_a);
                 
                 % Finalizamos el calculo de la traza.
                 traza = traza / i;
